@@ -18,15 +18,15 @@ jobs:
       - image: circleci/node:13.8.0
     steps: 
       - run: 
-           command: $myName   
+           command: echo $myName   
 # Orchestrate or schedule a set of jobs
 workflows:
   # Name the workflow "welcome"
   welcome:
     # Run the welcome/run job in its own container
     jobs:
-      - print_hello
-      - print_world: 
-          requires:
-            - print_hello
+      #- print_hello
+      #- print_world: 
+      #    requires:
+      #      - print_hello
       - print_my_name
