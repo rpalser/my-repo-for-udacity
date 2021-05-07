@@ -17,7 +17,8 @@ jobs:
     docker:
       - image: circleci/node:13.8.0
     steps: 
-      - run: echo $myName   
+      - run: 
+           command: $myName   
 # Orchestrate or schedule a set of jobs
 workflows:
   # Name the workflow "welcome"
