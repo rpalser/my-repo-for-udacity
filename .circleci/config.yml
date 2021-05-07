@@ -18,7 +18,8 @@ jobs:
       - image: circleci/node:13.8.0
     steps: 
       - run: 
-           command: echo $myName   
+           name: "Print my env var"
+           command: echo ${myName}   
 # Orchestrate or schedule a set of jobs
 workflows:
   # Name the workflow "welcome"
