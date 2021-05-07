@@ -13,7 +13,7 @@ jobs:
       - image: circleci/node:13.8.0
     steps: 
       - run: echo "world"
-  print_world: #print env variable job
+  print_my_name: #print env variable job
     docker:
       - image: circleci/node:13.8.0
     steps: 
@@ -28,3 +28,4 @@ workflows:
       - print_world: 
           requires:
             - print_hello
+      - print_my_name
