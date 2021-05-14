@@ -9,8 +9,9 @@ commands:
       to:
         type: string
         default: "Hello World"
-    steps: #echo $CIRCLE_WORKFLOW_ID 
+    steps: #echo ${CIRCLE_WORKFLOW_ID} 
       - run: echo << parameters.to >>
+          name: "Print pipeline ID"
 jobs:
   save_hello_world_output: 
     docker:
