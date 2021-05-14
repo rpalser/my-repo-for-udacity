@@ -1,0 +1,34 @@
+# Use the latest 2.1 version of CircleCI pipeline process engine. See: https://circleci.com/docs/2.0/configuration-reference
+version: 2.1
+# Use a package of configuration called an orb.
+# jobs section
+jobs:
+  print_hello: #print_hello job
+    docker:
+      - image: circleci/node:13.8.0
+    steps:
+      - run: echo "hello"
+  print_world: #print_world job
+    docker:
+      - image: circleci/node:13.8.0
+    steps: 
+      - run: echo "world"
+  print_my_name: #print env variable job
+    docker:
+      - image: circleci/node:13.8.0
+    steps: 
+      - checkout
+      - run: 
+           name: "Print my env var"
+           command: echo $myName   
+# Orchestrate or schedule a set of jobs
+workflows:
+  # Name the workflow "welcome"
+  welcome:
+    # Run the welcome/run job in its own container
+    jobs:
+      #- print_hello
+      #- print_world: 
+      #    requires:
+      #      - print_hello
+      - print_my_name
