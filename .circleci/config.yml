@@ -7,6 +7,7 @@ jobs:
     docker:
       - image: circleci/node:13.8.0
     steps:
+      - run: mkdir /outputFolder
       - run: echo "hello world" > /outputFolder/output.txt
       - persist_to_workspace:
           root: /outputFolder
