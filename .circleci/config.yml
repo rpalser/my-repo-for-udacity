@@ -32,8 +32,8 @@ jobs:
     docker:
       - image: circleci/node:13.8.0
     steps: 
-      - print_pipeline_id:
-          to: "I am Rachel"
+      - print_pipeline_id
+          #to: "I am Rachel"
 # Orchestrate or schedule a set of jobs
 workflows:
   # Name the workflow "myWorkflow"
