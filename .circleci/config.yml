@@ -15,14 +15,26 @@ jobs:
           name: On Failure
           when: on_fail
           command: echo "Job failed"
+  create_infrastructure:
+     docker:
+        - image: amazon/aws-cli
+     steps: 
+        - checkout
+        - run:
+            name: Ensure backend infrastrucutre exists
+            command: |
+              aws cloudformation deploy \
+              --template-file template.yml \
+              --stack-name my-stack
 # Orchestrate or schedule a set of jobs
 workflows:
   # Name the workflow 
-  myWorkflow:
+  my_workflow:
     # Run the jobs
     jobs:
-      - print_hello
+      # - print_hello
       #- print_world: 
       #    requires:
       #      - print_hello
       #- print_my_name
+      - create_infrastructure
