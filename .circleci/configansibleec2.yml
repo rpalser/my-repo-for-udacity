@@ -38,9 +38,8 @@ jobs:
             command: |
               apk add --update ansible
         - run:
-            name: Configure server
             command: |
-              ansible-playbook -i inventory.txt main-remote.yml
+            name: ansible-playbook -i inventory.txt main-remote.yml
 
 # Orchestrate or schedule a set of jobs
 workflows:
