@@ -26,7 +26,7 @@ jobs:
               aws cloudformation deploy \
               --template-file template.yml \
               --stack-name my-stack
-  execute_playbook:
+  configure_infrastructure:
      docker:
         - image: python:3.7-alpine3.11
      steps: 
@@ -38,9 +38,27 @@ jobs:
             command: |
               apk add --update ansible
         - run:
-            name: Configure server
+            name: Configure server using ansible playbook
             command: |
               ansible-playbook -i inventory.txt playbook.yml
+  smoke_test:
+     docker:
+        - image: alpine:latest
+     steps: 
+        - run:
+            name: Install dependencies
+            command: |
+              apk add --update curl
+        - run:
+            name: Execute smoke test
+            command: |
+              URL = "https://google.com" 
+              if curl -s --head ${URL}
+              then
+               return 0
+              else
+               return 1
+              fi
 
 # Orchestrate or schedule a set of jobs
 workflows:
@@ -54,4 +72,7 @@ workflows:
       #      - print_hello
       #- print_my_name
       #- create_infrastructure
-      - execute_playbook
+      #- econfigure_infrastructure
+      - smoke_test:
+            requires:
+              - configure_infrastructure
