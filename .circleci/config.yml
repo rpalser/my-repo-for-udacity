@@ -66,7 +66,7 @@ workflows:
   my_workflow:
     # Run the jobs
     jobs:
-      # - print_hello
+      #- print_hello
       #- print_world: 
       #    requires:
       #      - print_hello
@@ -75,5 +75,4 @@ workflows:
       - configure_infrastructure
       - smoke_test:
           requires:
-            -  configure_infrastructures
-
+            - configure_infrastructure
