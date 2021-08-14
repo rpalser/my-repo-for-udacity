@@ -38,10 +38,10 @@ jobs:
         - run: 
             name: force a failure
             command: |
-                return 1
+              return 1
         - run: 
             name: execute the destroy command
-            command: destroy_environment
+            destroy_environment
             when: on_fail
   configure_infrastructure:
      docker:
