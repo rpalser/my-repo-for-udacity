@@ -88,8 +88,8 @@ workflows:
       #    requires:
       #      - print_hello
       #- print_my_name
-      #- create_infrastructure
-      - configure_infrastructure
+      - create_infrastructure
+      #- configure_infrastructure
       #- smoke_test:
       #    requires:
       #      - configure_infrastructure
