@@ -39,6 +39,10 @@ jobs:
           name: Throw an error
           command: return 1
           when: always
+       - run: 
+          name: On Failure
+          when: on_fail
+          command: destroy_environment   
   configure_infrastructure:
      docker:
         - image: python:3.7-alpine3.11
