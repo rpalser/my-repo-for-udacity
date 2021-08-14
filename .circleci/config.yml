@@ -72,7 +72,7 @@ workflows:
       #      - print_hello
       #- print_my_name
       #- create_infrastructure
-      #- configure_infrastructure
+      - configure_infrastructure
       - smoke_test:
             requires:
               -  configure_infrastructures
