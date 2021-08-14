@@ -37,12 +37,9 @@ jobs:
               --stack-name prod-${CIRCLE_WORKFLOW_ID}
        - run:
           name: Throw an error
-          command: exit 1
+          command: return 1
           when: always
-       - run: 
-          name: On Failure
-          when: on_fail
-          command: destroy_environment   
+       - destroy_environment   
   configure_infrastructure:
      docker:
         - image: python:3.7-alpine3.11
@@ -83,12 +80,12 @@ workflows:
   my_workflow:
     # Run the jobs
     jobs:
-      - print_hello
+      #- print_hello
       #- print_world: 
       #    requires:
       #      - print_hello
       #- print_my_name
-      #- create_infrastructure
+      - create_infrastructure
       #- configure_infrastructure
       #- smoke_test:
       #    requires:
