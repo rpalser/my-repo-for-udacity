@@ -35,11 +35,11 @@ jobs:
               aws cloudformation deploy \
               --template-file template.yml \
               --stack-name prod-${CIRCLE_WORKFLOW_ID}
+       - destroy_environment
        - run:
           name: Throw an error
           command: return 1
-          when: always
-       - destroy_environment   
+          when: always 
   configure_infrastructure:
      docker:
         - image: python:3.7-alpine3.11
