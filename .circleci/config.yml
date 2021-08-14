@@ -72,7 +72,8 @@ workflows:
       #      - print_hello
       #- print_my_name
       #- create_infrastructure
-      #- econfigure_infrastructure
+      #- configure_infrastructure
       - smoke_test:
             requires:
-              - configure_infrastructure
+              -  configure_infrastructures
+
