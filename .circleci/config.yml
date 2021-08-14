@@ -52,7 +52,7 @@ jobs:
         - run:
             name: Execute smoke test
             command: |
-              URL = "https://google.com" 
+              URL = "http://google.com" 
               if curl -s --head ${URL}
               then
                return 0
