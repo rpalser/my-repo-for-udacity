@@ -95,7 +95,6 @@ jobs:
        - run:
             name: Get the pipeline ID from last Prodcution Deployment
             command: |
-              aws cloudformation \
               export PreviousPipelineID=$(aws cloudformation list-exports --query \
               "Exports[?Name==\`PipelineID\`].Value" --no-paginate --output text)
   promote_to_production:
