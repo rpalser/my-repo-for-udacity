@@ -93,10 +93,10 @@ jobs:
      steps: 
        - checkout
        - run:
-            name: Get the pipeline ID from last Prodcution Deployment
+            name: Get the pipeline ID from last Production Deployment
             command: |
-              export PreviousPipelineID=$(aws cloudformation list-exports --query \
-              "Exports[?Name==\`PipelineID\`].Value" --no-paginate --output text)
+              echo "export PreviousPipelineID=$(aws cloudformation list-exports --query \
+              "Exports[?Name==\`PipelineID\`].Value" --no-paginate --output text)"
   promote_to_production:
      docker:
         - image: amazon/aws-cli
