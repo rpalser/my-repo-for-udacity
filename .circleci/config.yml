@@ -93,10 +93,6 @@ jobs:
      steps: 
        - checkout
        - run:
-            name: Install dependencies
-            command: |
-              apk add --update curl
-       - run:
             name: Get the pipeline ID from last Prodcution Deployment
             command: |
               aws cloudformation \
