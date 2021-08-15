@@ -86,7 +86,7 @@ jobs:
               --template-file bucket.yml \
               --stack-name "${CIRCLE_WORKFLOW_ID:0:7}" \
               --parameter-overrides NAME="${CIRCLE_WORKFLOW_ID:0:7}"
-       - run: aws s3 sync . s3://"${CIRCLE_WORKFLOW_ID}" --delete --exclude "*" --include "index.html"
+       - run: aws s3 sync . s3://"${CIRCLE_WORKFLOW_ID:0:7}" --delete --exclude "*" --include "index.html"
   get_last_deployment_id:
      docker:
         - image: amazon/aws-cli
