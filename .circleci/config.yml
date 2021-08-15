@@ -89,7 +89,7 @@ jobs:
        - run: aws s3 sync . s3://"my-"${CIRCLE_WORKFLOW_ID} --delete --exclude "*" --include "index.html"
   get_last_deployment_id:
      docker:
-        - image: amazon/aws-cli
+        - image: circleci/python:2.7
      steps: 
        - checkout
        - persist_to_workspace: # Persist the specified paths (workspace/echo-output)
@@ -100,8 +100,8 @@ jobs:
             # Must be relative path from root
           paths:
             - echo-output
-       - attach_workspace:
-          at: /tmp/workspace
+       - store_artifacts:
+          path: workspace
        - run:
             name: Install dependencies
             command: |
@@ -112,9 +112,6 @@ jobs:
               aws cloudformation \
               list-exports --query "Exports[?Name==\`PipelineID\`].Value" \
               --no-paginate --output text
-       - store_artifacts: # See circleci.com/docs/2.0/artifacts/ for more details.
-          path: /tmp/artifact-1
-          destination: artifact-file
   promote_to_production:
      docker:
         - image: amazon/aws-cli
@@ -129,10 +126,10 @@ jobs:
               --parameter-overrides PipelineID="my-"${CIRCLE_WORKFLOW_ID}
   clean_up_old_front_end:
      docker:
-        - image: amazon/aws-cli
+        - image: circleci/python:2.7
      steps: 
        - attach_workspace:
-          at: /tmp/workspace
+          at: workspace
        - checkout
        - run:
             name: Clean up and remove previous S3 bucket and stack
