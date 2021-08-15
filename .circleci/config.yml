@@ -113,8 +113,6 @@ jobs:
      docker:
         - image: amazon/aws-cli
      steps: 
-       - attach_workspace:
-          at: workspace
        - checkout
        - run:
             name: Clean up and remove previous S3 bucket and stack
