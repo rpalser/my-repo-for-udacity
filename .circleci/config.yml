@@ -86,7 +86,7 @@ jobs:
               --template-file bucket.yml \
               --stack-name "${CIRCLE_WORKFLOW_ID:0:7}" \
               --parameter-overrides NAME="${CIRCLE_WORKFLOW_ID:0:7}"
-       - run: aws s3 sync index.html s3://"${CIRCLE_WORKFLOW_ID}" --delete
+       - run: aws s3 sync . s3://"${CIRCLE_WORKFLOW_ID}" --delete --exclude "*" --include "index.html"
   get_last_deployment_id:
      docker:
         - image: amazon/aws-cli
@@ -120,7 +120,6 @@ jobs:
             command: |
               aws s3 rm "s3://${OldPipelineID}" --recursive
               aws cloudformation delete-stack --stack-name "${PreviousPipelineID}"
-   
 
 # Orchestrate or schedule a set of jobs
 workflows:
@@ -145,6 +144,6 @@ workflows:
       - promote_to_production:
           requires:
             - get_last_deployment_id
-      - clean_up_old_front_end:
-          requires:
-            - promote_to_production
+      #- clean_up_old_front_end:
+      #    requires:
+      #      - promote_to_production
