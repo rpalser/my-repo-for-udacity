@@ -74,6 +74,53 @@ jobs:
               else
                return 1
               fi
+  create_and_deploy_front_end:
+     docker:
+        - image: amazon/aws-cli
+     steps: 
+       - checkout
+       - run:
+            name: Create Static S3 Website Bucket
+            command: |
+              aws cloudformation deploy \
+              --template-file bucket.yml \
+              --stack-name "${CIRCLE_WORKFLOW_ID:0:7}" \ # ${CIRCLE_WORKFLOW_ID:0:7} takes the first 7 chars of the variable CIRCLE_CI_WORKFLOW_ID
+              --parameter-overrides NAME="${CIRCLE_WORKFLOW_ID:0:7}"
+       - run: aws s3 sync index.html s3://"${CIRCLE_WORKFLOW_ID}" --delete
+  get_last_deployment_id:
+     docker:
+        - image: amazon/aws-cli
+     steps: 
+       - checkout
+       - run:
+            name: Get the pipeline ID from last Prodcution Deployment
+            command: |
+              aws cloudformation \
+              list-exports --query "Exports[?Name==\`PipelineID\`].Value" \
+              --no-paginate --output text      
+  promote_to_production:
+     docker:
+        - image: amazon/aws-cli
+     steps: 
+       - checkout
+       - run:
+            name: Update Cloudformation and Cloudfront with new Bucket name
+            command: |
+              aws cloudformation deploy \
+              --template-file cloudfront.yml \
+              --stack-name production-distro \
+              --parameter-overrides PipelineID="${CIRCLE_WORKFLOW_ID}"
+  clean_up_old_front_end:
+     docker:
+        - image: amazon/aws-cli
+     steps: 
+       - checkout
+       - run:
+            name: Clean up and remove previous S3 bucket and stack
+            command: |
+              aws s3 rm "s3://${OldPipelineID}" --recursive
+              aws cloudformation delete-stack --stack-name "${PreviousPipelineID}"
+   
 
 # Orchestrate or schedule a set of jobs
 workflows:
@@ -86,8 +133,18 @@ workflows:
       #    requires:
       #      - print_hello
       #- print_my_name
-      - create_infrastructure
+      # - create_infrastructure
       #- configure_infrastructure
       #- smoke_test:
       #    requires:
       #      - configure_infrastructure
+      - create_and_deploy_front_end
+      - get_last_deployment_id:
+          requires:
+            - create_and_deploy_front_end
+      - promote_to_production:
+          requires:
+            - get_last_deployment_id
+      - clean_up_old_front_end:
+          requires:
+            - promote_to_production
