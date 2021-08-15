@@ -86,7 +86,7 @@ jobs:
               --template-file bucket.yml \
               --stack-name "my-"${CIRCLE_WORKFLOW_ID:0:7} \
               --parameter-overrides NAME="my-"${CIRCLE_WORKFLOW_ID:0:7}
-       - run: aws s3 sync . s3://"my-"${CIRCLE_WORKFLOW_ID:0:7}" --delete --exclude "*" --include "index.html"
+       - run: aws s3 sync . s3://"my-"${CIRCLE_WORKFLOW_ID:0:7} --delete --exclude "*" --include "index.html"
   get_last_deployment_id:
      docker:
         - image: amazon/aws-cli
@@ -109,7 +109,7 @@ jobs:
               aws cloudformation deploy \
               --template-file cloudfront.yml \
               --stack-name production-distro \
-              --parameter-overrides PipelineID="my-${CIRCLE_WORKFLOW_ID:0:7}"
+              --parameter-overrides PipelineID="my-"${CIRCLE_WORKFLOW_ID:0:7}
   clean_up_old_front_end:
      docker:
         - image: amazon/aws-cli
