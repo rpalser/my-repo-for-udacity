@@ -89,19 +89,30 @@ jobs:
        - run: aws s3 sync . s3://"my-"${CIRCLE_WORKFLOW_ID} --delete --exclude "*" --include "index.html"
   get_last_deployment_id:
      docker:
-        - image: amazon/aws-cli
+        - image: circleci/python:2.7
      steps: 
        - checkout
+       - persist_to_workspace: # Persist the specified paths (workspace/echo-output)
+      # into the workspace for use in downstream job. Must be an absolute path,
+      # or relative path from working_directory. This is a directory on the container which is
+      # taken to be the root directory of the workspace.
+          root: workspace
+            # Must be relative path from root
+          paths:
+            - echo-output
+       - store_artifacts:
+          path: workspace
        - run:
             name: Install dependencies
             command: |
               apk add --update curl
        - run:
             name: Get the pipeline ID from last Prodcution Deployment
+            #yum install -y tar gzip
             command: |
               aws cloudformation \
-              export PreviousPipelineID=$(aws cloudformation list-exports --query \
-              "Exports[?Name==\`PipelineID\`].Value" --no-paginate --output text)
+              list-exports --query "Exports[?Name==\`PipelineID\`].Value" \
+              --no-paginate --output text
   promote_to_production:
      docker:
         - image: amazon/aws-cli
@@ -116,7 +127,7 @@ jobs:
               --parameter-overrides PipelineID="my-"${CIRCLE_WORKFLOW_ID}
   clean_up_old_front_end:
      docker:
-        - image: amazon/aws-cli
+        - image: circleci/python:2.7
      steps: 
        - attach_workspace:
           at: workspace
@@ -124,7 +135,7 @@ jobs:
        - run:
             name: Clean up and remove previous S3 bucket and stack
             command: |
-              aws s3 rm "s3://${PreviousPipelineID}" --recursive
+              aws s3 rm "s3://${OldPipelineID}" --recursive
               aws cloudformation delete-stack --stack-name "${PreviousPipelineID}"
 
 # Orchestrate or schedule a set of jobs
