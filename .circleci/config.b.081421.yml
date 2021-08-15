@@ -90,7 +90,6 @@ jobs:
   get_last_deployment_id:
      docker:
         - image: amazon/aws-cli
-     working_directory: ~/project
      steps: 
        - checkout
        - run:
@@ -98,11 +97,7 @@ jobs:
             command: |
               aws cloudformation \
               list-exports --query "Exports[?Name==\`PipelineID\`].Value:0:7" \
-              --no-paginate --output text
-       - persist_to_workspace: 
-           root: /root/project
-           paths:
-              - . 
+              --no-paginate --output text      
   promote_to_production:
      docker:
         - image: amazon/aws-cli
@@ -119,8 +114,6 @@ jobs:
      docker:
         - image: amazon/aws-cli
      steps: 
-       - attach_workspace:
-          at: /root/project
        - checkout
        - run:
             name: Clean up and remove previous S3 bucket and stack
