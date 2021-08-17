@@ -95,8 +95,8 @@ jobs:
        - run:
             name: Get the pipeline ID from last Production Deployment then promote to PROD then clean up
             command: |
-              "export PreviousPipelineID=$(aws cloudformation list-exports --query \
-              "Exports[?Name==\`PipelineID\`].Value" --no-paginate --output text)"
+              export PreviousPipelineID=$(aws cloudformation list-exports --query \
+              "Exports[?Name==\`PipelineID\`].Value" --no-paginate --output text)
               echo "${PreviousPipelineID}"
               aws cloudformation deploy \
               --template-file cloudfront.yml \
