@@ -93,17 +93,23 @@ jobs:
      steps: 
        - checkout
        - run:
-            name: Get the pipeline ID from last Production Deployment then promote to PROD then clean up
+            name: Get the pipeline ID from last Production Deployment
             command: |
-              "export PreviousPipelineID=$(aws cloudformation list-exports --query \
+              echo "export PreviousPipelineID=$(aws cloudformation list-exports --query \
               "Exports[?Name==\`PipelineID\`].Value" --no-paginate --output text)"
-              echo "${PreviousPipelineID}"
+       - run:
+            name: Update Cloudformation and Cloudfront with new Bucket name
+            command: |
               aws cloudformation deploy \
               --template-file cloudfront.yml \
               --stack-name production-distro \
               --parameter-overrides PipelineID="my-"${CIRCLE_WORKFLOW_ID}
+       - run:
+            name: Clean up and remove previous S3 bucket and stack
+            command: |
+              echo "${PreviousPipelineID}"
               aws s3 rm "s3://${PreviousPipelineID}" --recursive
-              aws cloudformation delete-stack --stack-name "${PreviousPipelineID}" 
+              aws cloudformation delete-stack --stack-name "${PreviousPipelineID}"       
 
 # Orchestrate or schedule a set of jobs
 workflows:
