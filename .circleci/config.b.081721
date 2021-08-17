@@ -86,8 +86,8 @@ jobs:
               --template-file bucket.yml \
               --stack-name "my-"${CIRCLE_WORKFLOW_ID} \
               --parameter-overrides NAME="my-"${CIRCLE_WORKFLOW_ID}
-       - run: aws s3 sync . s3://"my-"${CIRCLE_WORKFLOW_ID} --delete --exclude "*" --include "index.html"     
-  get_prev_id_promote_to_production_clean_up:
+       - run: aws s3 sync . s3://"my-"${CIRCLE_WORKFLOW_ID} --delete --exclude "*" --include "index.html"
+  get_last_deployment_id:
      docker:
         - image: amazon/aws-cli
      steps: 
@@ -97,6 +97,11 @@ jobs:
             command: |
               echo "export PreviousPipelineID=$(aws cloudformation list-exports --query \
               "Exports[?Name==\`PipelineID\`].Value" --no-paginate --output text)"
+  promote_to_production:
+     docker:
+        - image: amazon/aws-cli
+     steps: 
+       - checkout
        - run:
             name: Update Cloudformation and Cloudfront with new Bucket name
             command: |
@@ -104,12 +109,17 @@ jobs:
               --template-file cloudfront.yml \
               --stack-name production-distro \
               --parameter-overrides PipelineID="my-"${CIRCLE_WORKFLOW_ID}
+  clean_up_old_front_end:
+     docker:
+        - image: amazon/aws-cli
+     steps: 
+       - checkout
        - run:
             name: Clean up and remove previous S3 bucket and stack
             command: |
               echo ${PreviousPipelineID}"
               aws s3 rm "s3://${PreviousPipelineID}" --recursive
-              aws cloudformation delete-stack --stack-name "${PreviousPipelineID}"       
+              aws cloudformation delete-stack --stack-name "${PreviousPipelineID}"
 
 # Orchestrate or schedule a set of jobs
 workflows:
@@ -128,6 +138,12 @@ workflows:
       #    requires:
       #      - configure_infrastructure
       - create_and_deploy_front_end
-      - get_prev_id_promote_to_production_clean_up:
+      - get_last_deployment_id:
           requires:
             - create_and_deploy_front_end
+      - promote_to_production:
+          requires:
+            - get_last_deployment_id
+      - clean_up_old_front_end:
+          requires:
+            - promote_to_production
