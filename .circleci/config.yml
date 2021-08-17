@@ -84,9 +84,9 @@ jobs:
             command: |
               aws cloudformation deploy \
               --template-file bucket.yml \
-              --stack-name "my-"${CIRCLE_WORKFLOW_ID} \
-              --parameter-overrides NAME="my-"${CIRCLE_WORKFLOW_ID}
-       - run: aws s3 sync . s3://"my-"${CIRCLE_WORKFLOW_ID} --delete --exclude "*" --include "index.html"     
+              --stack-name "cf-"${CIRCLE_WORKFLOW_ID} \
+              --parameter-overrides NAME="cf-"${CIRCLE_WORKFLOW_ID}
+       - run: aws s3 sync . s3://"cf-"${CIRCLE_WORKFLOW_ID} --delete --exclude "*" --include "index.html"     
   get_prev_id_promote_to_production_clean_up:
      docker:
         - image: amazon/aws-cli
@@ -101,7 +101,7 @@ jobs:
               aws cloudformation deploy \
               --template-file cloudfront.yml \
               --stack-name production-distro \
-              --parameter-overrides PipelineID="my-"${CIRCLE_WORKFLOW_ID}
+              --parameter-overrides PipelineID="cf-"${CIRCLE_WORKFLOW_ID}
               aws s3 rm "s3://${PreviousPipelineID}" --recursive
               aws cloudformation delete-stack --stack-name "${PreviousPipelineID}" 
 
